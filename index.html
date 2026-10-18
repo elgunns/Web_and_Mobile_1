@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grand Theatre — Ticketing</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>Grand Theatre</h1>
+    <p class="subtitle">Select your seats</p>
+  </header>
+ 
+  <main class="layout">
+    <section class="venue-panel" aria-label="Venue map">
+      <div class="map-controls">
+        <button type="button" id="zoom-in" aria-label="Zoom in">+</button>
+        <button type="button" id="zoom-out" aria-label="Zoom out">−</button>
+        <button type="button" id="move-up" aria-label="Move up">↑</button>
+        <button type="button" id="move-down" aria-label="Move down">↓</button>
+        <button type="button" id="move-left" aria-label="Move left">←</button>
+        <button type="button" id="move-right" aria-label="Move right">→</button>
+        <button type="button" id="reset-view">Reset view</button>
+      </div>
+ 
+      <div class="map-viewport" id="map-viewport">
+        <div class="map-content" id="map-content">
+          <div class="stage">STAGE</div>
+          <div id="seat-map" class="seat-map">
+
+          </div>
+        </div>
+      </div>
+ 
+      <ul class="legend">
+        <li><span class="swatch available"></span>Available</li>
+        <li><span class="swatch inspected"></span>Selected</li>
+        <li><span class="swatch in-cart"></span>In cart</li>
+        <li><span class="swatch unavailable"></span>Unavailable</li>
+      </ul>
+    </section>
+ 
+    <aside class="side-panel">
+      <section class="seat-details" aria-label="Seat details">
+        <h2>Seat details</h2>
+        <div id="seat-info">
+          <p class="muted">Click a seat to see its details.</p>
+        </div>
+        <button type="button" id="add-to-cart" class="primary" disabled>ADD TO CART</button>
+      </section>
+ 
+      <section class="cart" aria-label="Cart">
+        <h2>Cart</h2>
+        <ul id="cart-list" class="cart-list"></ul>
+        <p class="cart-total">Total: <strong id="cart-total">0 AZN</strong></p>
+      </section>
+    </aside>
+  </main>
+ 
+  <script src="data.js"></script>
+</body>
+</html>
