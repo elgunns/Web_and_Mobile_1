@@ -4,6 +4,7 @@ const PRICE_CATEGORIES = {
   economy: { label: "Economy", price: 20 },
 };
  
+
 const VENUE = {
   name: "Grand Theatre",
   type: "theatre",
