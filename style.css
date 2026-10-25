@@ -230,3 +230,18 @@ button.primary:disabled {
 .aisle {
   width: 20px;
 }
+.seat-details-list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  margin: 0 0 12px;
+}
+
+.seat-details-list dt {
+  color: var(--muted);
+}
+
+.seat-details-list dd {
+  margin: 0;
+  font-weight: 600;
+}
