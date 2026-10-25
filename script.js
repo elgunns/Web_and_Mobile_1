@@ -123,3 +123,65 @@ seatMap.addEventListener("click", (event) => {
   if (!button) return;
   inspectSeat(button.dataset.seatId);
 });
+const viewport = document.getElementById("map-viewport");
+const mapContent = document.getElementById("map-content");
+
+const ZOOM_STEP = 0.2;
+const MIN_ZOOM = 0.5;
+const MAX_ZOOM = 2.5;
+const MOVE_STEP = 60;
+
+const view = { scale: 1, x: 0, y: 0 };
+
+// keep at least half of the viewport covered by the map
+function clampView() {
+  const contentWidth = mapContent.offsetWidth * view.scale;
+  const contentHeight = mapContent.offsetHeight * view.scale;
+  const halfW = viewport.clientWidth / 2;
+  const halfH = viewport.clientHeight / 2;
+
+  view.x = Math.min(halfW, Math.max(halfW - contentWidth, view.x));
+  view.y = Math.min(halfH, Math.max(halfH - contentHeight, view.y));
+}
+
+function applyView() {
+  clampView();
+  mapContent.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
+}
+
+function zoom(delta) {
+  const newScale = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, view.scale + delta));
+
+  // zoom around the viewport center
+  const centerX = viewport.clientWidth / 2;
+  const centerY = viewport.clientHeight / 2;
+  view.x = centerX - ((centerX - view.x) * newScale) / view.scale;
+  view.y = centerY - ((centerY - view.y) * newScale) / view.scale;
+  view.scale = newScale;
+
+  applyView();
+}
+
+// moves the camera, so "up" shows the part of the map above
+function move(dx, dy) {
+  view.x -= dx;
+  view.y -= dy;
+  applyView();
+}
+
+function resetView() {
+  view.scale = Math.min(1, viewport.clientWidth / mapContent.offsetWidth);
+  view.x = (viewport.clientWidth - mapContent.offsetWidth * view.scale) / 2;
+  view.y = 0;
+  applyView();
+}
+
+document.getElementById("zoom-in").addEventListener("click", () => zoom(ZOOM_STEP));
+document.getElementById("zoom-out").addEventListener("click", () => zoom(-ZOOM_STEP));
+document.getElementById("move-up").addEventListener("click", () => move(0, -MOVE_STEP));
+document.getElementById("move-down").addEventListener("click", () => move(0, MOVE_STEP));
+document.getElementById("move-left").addEventListener("click", () => move(-MOVE_STEP, 0));
+document.getElementById("move-right").addEventListener("click", () => move(MOVE_STEP, 0));
+document.getElementById("reset-view").addEventListener("click", resetView);
+
+resetView();

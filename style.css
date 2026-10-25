@@ -245,3 +245,6 @@ button.primary:disabled {
   margin: 0;
   font-weight: 600;
 }
+.map-content {
+  transition: transform 0.2s ease;
+}
