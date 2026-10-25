@@ -202,3 +202,31 @@ button.primary:disabled {
     height: 400px;
   }
 }
+.section {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  margin: 0 0 6px;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.seat-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.row-label {
+  width: 18px;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.aisle {
+  width: 20px;
+}
