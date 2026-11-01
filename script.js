@@ -109,6 +109,7 @@ function showSeatDetails(seat) {
       <dt>Status</dt><dd>${getSeatStatus(seat)}</dd>
     </dl>
   `;
+  seatInfo.dataset.seatId = seat.id;
   addToCartButton.disabled = seat.unavailable || cart.includes(seat.id);
 }
 
@@ -148,6 +149,19 @@ function addToCart() {
   renderCart();
 }
 
+function removeFromCart(seatId) {
+  const index = cart.indexOf(seatId);
+  if (index === -1) return;
+
+  cart.splice(index, 1);
+  getSeatButton(seatId).classList.remove("in-cart");
+
+  if (seatInfo.dataset.seatId === seatId) {
+    showSeatDetails(findSeat(seatId));
+  }
+  renderCart();
+}
+
 function renderCart() {
   cartList.innerHTML = "";
 
@@ -164,7 +178,19 @@ function renderCart() {
     total += seat.price;
 
     const item = document.createElement("li");
-    item.textContent = `${seat.section} · Row ${seat.row}, Seat ${seat.number} — ${seat.price} ${VENUE.currency}`;
+    item.className = "cart-item";
+
+    const label = document.createElement("span");
+    label.textContent = `${seat.section} · Row ${seat.row}, Seat ${seat.number} — ${seat.price} ${VENUE.currency}`;
+
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.className = "remove-ticket";
+    removeButton.textContent = "Remove";
+    removeButton.setAttribute("aria-label", `Remove ${seat.section}, row ${seat.row}, seat ${seat.number} from cart`);
+    removeButton.addEventListener("click", () => removeFromCart(seatId));
+
+    item.append(label, removeButton);
     cartList.appendChild(item);
   });
 
