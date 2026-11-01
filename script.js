@@ -67,7 +67,10 @@ function renderVenue() {
 renderVenue();
 const seatInfo = document.getElementById("seat-info");
 const addToCartButton = document.getElementById("add-to-cart");
+const cartList = document.getElementById("cart-list");
+const cartTotal = document.getElementById("cart-total");
 let inspectedSeatId = null;
+const cart = [];
 
 function getSeatButton(seatId) {
   return seatMap.querySelector(`[data-seat-id="${seatId}"]`);
@@ -89,6 +92,12 @@ function findSeat(seatId) {
   };
 }
 
+function getSeatStatus(seat) {
+  if (seat.unavailable) return "Unavailable";
+  if (cart.includes(seat.id)) return "In cart";
+  return "Available";
+}
+
 function showSeatDetails(seat) {
   seatInfo.innerHTML = `
     <dl class="seat-details-list">
@@ -97,10 +106,10 @@ function showSeatDetails(seat) {
       <dt>Seat</dt><dd>${seat.number}</dd>
       <dt>Category</dt><dd>${seat.category}</dd>
       <dt>Price</dt><dd>${seat.price} ${VENUE.currency}</dd>
-      <dt>Status</dt><dd>${seat.unavailable ? "Unavailable" : "Available"}</dd>
+      <dt>Status</dt><dd>${getSeatStatus(seat)}</dd>
     </dl>
   `;
-  addToCartButton.disabled = seat.unavailable;
+  addToCartButton.disabled = seat.unavailable || cart.includes(seat.id);
 }
 
 function inspectSeat(seatId) {
@@ -123,6 +132,46 @@ seatMap.addEventListener("click", (event) => {
   if (!button) return;
   inspectSeat(button.dataset.seatId);
 });
+
+function addToCart() {
+  if (!inspectedSeatId || cart.includes(inspectedSeatId)) return;
+
+  const seatId = inspectedSeatId;
+  cart.push(seatId);
+
+  const button = getSeatButton(seatId);
+  button.classList.remove("inspected");
+  button.classList.add("in-cart");
+  inspectedSeatId = null;
+
+  showSeatDetails(findSeat(seatId));
+  renderCart();
+}
+
+function renderCart() {
+  cartList.innerHTML = "";
+
+  if (cart.length === 0) {
+    const empty = document.createElement("li");
+    empty.className = "muted";
+    empty.textContent = "Your cart is empty.";
+    cartList.appendChild(empty);
+  }
+
+  let total = 0;
+  cart.forEach((seatId) => {
+    const seat = findSeat(seatId);
+    total += seat.price;
+
+    const item = document.createElement("li");
+    item.textContent = `${seat.section} · Row ${seat.row}, Seat ${seat.number} — ${seat.price} ${VENUE.currency}`;
+    cartList.appendChild(item);
+  });
+
+  cartTotal.textContent = `${total} ${VENUE.currency}`;
+}
+
+addToCartButton.addEventListener("click", addToCart);
 const viewport = document.getElementById("map-viewport");
 const mapContent = document.getElementById("map-content");
 
@@ -133,7 +182,6 @@ const MOVE_STEP = 60;
 
 const view = { scale: 1, x: 0, y: 0 };
 
-// keep at least half of the viewport covered by the map
 function clampView() {
   const contentWidth = mapContent.offsetWidth * view.scale;
   const contentHeight = mapContent.offsetHeight * view.scale;
@@ -152,7 +200,6 @@ function applyView() {
 function zoom(delta) {
   const newScale = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, view.scale + delta));
 
-  // zoom around the viewport center
   const centerX = viewport.clientWidth / 2;
   const centerY = viewport.clientHeight / 2;
   view.x = centerX - ((centerX - view.x) * newScale) / view.scale;
@@ -162,7 +209,6 @@ function zoom(delta) {
   applyView();
 }
 
-// moves the camera, so "up" shows the part of the map above
 function move(dx, dy) {
   view.x -= dx;
   view.y -= dy;
@@ -185,3 +231,4 @@ document.getElementById("move-right").addEventListener("click", () => move(MOVE_
 document.getElementById("reset-view").addEventListener("click", resetView);
 
 resetView();
+renderCart();
