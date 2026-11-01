@@ -71,6 +71,7 @@ const cartList = document.getElementById("cart-list");
 const cartTotal = document.getElementById("cart-total");
 let inspectedSeatId = null;
 const cart = [];
+const CART_STORAGE_KEY = "venue-cart";
 
 function getSeatButton(seatId) {
   return seatMap.querySelector(`[data-seat-id="${seatId}"]`);
@@ -162,6 +163,25 @@ function removeFromCart(seatId) {
   renderCart();
 }
 
+function loadCart() {
+  let saved;
+  try {
+    saved = JSON.parse(localStorage.getItem(CART_STORAGE_KEY));
+  } catch (error) {
+    saved = null;
+  }
+
+  if (!Array.isArray(saved)) return;
+
+  saved.forEach((seatId) => {
+    const button = getSeatButton(seatId);
+    if (!button || button.classList.contains("unavailable") || cart.includes(seatId)) return;
+
+    cart.push(seatId);
+    button.classList.add("in-cart");
+  });
+}
+
 function renderCart() {
   cartList.innerHTML = "";
 
@@ -195,6 +215,7 @@ function renderCart() {
   });
 
   cartTotal.textContent = `${total} ${VENUE.currency}`;
+  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
 }
 
 addToCartButton.addEventListener("click", addToCart);
@@ -257,4 +278,5 @@ document.getElementById("move-right").addEventListener("click", () => move(MOVE_
 document.getElementById("reset-view").addEventListener("click", resetView);
 
 resetView();
+loadCart();
 renderCart();
