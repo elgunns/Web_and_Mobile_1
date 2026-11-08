@@ -86,6 +86,8 @@ const seatInfo = document.getElementById("seat-info");
 const addToCartButton = document.getElementById("add-to-cart");
 const cartList = document.getElementById("cart-list");
 const cartTotal = document.getElementById("cart-total");
+const cartCount = document.getElementById("cart-count");
+const clearCartButton = document.getElementById("clear-cart");
 let inspectedSeatId = null;
 const cart = [];
 const CART_STORAGE_KEY = "venue-cart";
@@ -129,6 +131,14 @@ function showSeatDetails(seat) {
   `;
   seatInfo.dataset.seatId = seat.id;
   addToCartButton.disabled = seat.unavailable || cart.includes(seat.id);
+
+  if (seat.unavailable) {
+    addToCartButton.textContent = "SEAT UNAVAILABLE";
+  } else if (cart.includes(seat.id)) {
+    addToCartButton.textContent = "ALREADY IN CART";
+  } else {
+    addToCartButton.textContent = "ADD TO CART";
+  }
 }
 
 function inspectSeat(seatId) {
@@ -178,6 +188,21 @@ function removeFromCart(seatId) {
     showSeatDetails(findSeat(seatId));
   }
   renderCart();
+}
+
+function clearCart() {
+  if (cart.length === 0) return;
+  if (!confirm("Remove all tickets from the cart?")) return;
+
+  cart.slice().forEach(removeFromCart);
+}
+
+function saveCart() {
+  try {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+  } catch (error) {
+    console.warn("Could not save cart:", error);
+  }
 }
 
 function loadCart() {
@@ -232,15 +257,18 @@ function renderCart() {
   });
 
   cartTotal.textContent = `${total} ${VENUE.currency}`;
-  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+  cartCount.textContent = `(${cart.length})`;
+  clearCartButton.disabled = cart.length === 0;
+  saveCart();
 }
 
 addToCartButton.addEventListener("click", addToCart);
+clearCartButton.addEventListener("click", clearCart);
 const viewport = document.getElementById("map-viewport");
 const mapContent = document.getElementById("map-content");
 
 const ZOOM_STEP = 0.2;
-const MIN_ZOOM = 0.5;
+const MIN_ZOOM = 0.3;
 const MAX_ZOOM = 2.5;
 const MOVE_STEP = 60;
 
@@ -259,6 +287,9 @@ function clampView() {
 function applyView() {
   clampView();
   mapContent.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
+
+  zoomInButton.disabled = view.scale >= MAX_ZOOM;
+  zoomOutButton.disabled = view.scale <= MIN_ZOOM;
 }
 
 function zoom(delta) {
@@ -286,8 +317,11 @@ function resetView() {
   applyView();
 }
 
-document.getElementById("zoom-in").addEventListener("click", () => zoom(ZOOM_STEP));
-document.getElementById("zoom-out").addEventListener("click", () => zoom(-ZOOM_STEP));
+const zoomInButton = document.getElementById("zoom-in");
+const zoomOutButton = document.getElementById("zoom-out");
+
+zoomInButton.addEventListener("click", () => zoom(ZOOM_STEP));
+zoomOutButton.addEventListener("click", () => zoom(-ZOOM_STEP));
 document.getElementById("move-up").addEventListener("click", () => move(0, -MOVE_STEP));
 document.getElementById("move-down").addEventListener("click", () => move(0, MOVE_STEP));
 document.getElementById("move-left").addEventListener("click", () => move(-MOVE_STEP, 0));

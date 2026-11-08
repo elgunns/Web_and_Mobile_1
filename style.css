@@ -99,6 +99,11 @@ button {
   background: var(--accent);
 }
 
+.map-controls button:disabled {
+  background: #9aa1ad;
+  cursor: not-allowed;
+}
+
 #reset-view {
   background: #fff;
   color: var(--dark);
@@ -256,6 +261,26 @@ button.primary:disabled {
 .remove-ticket:hover {
   background: var(--accent);
   color: #fff;
+}
+
+.clear-cart {
+  margin-top: 10px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.clear-cart:hover {
+  color: var(--accent);
+}
+
+.clear-cart:disabled {
+  visibility: hidden;
 }
 
 /* Responsive */

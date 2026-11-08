@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Grand Theatre — Ticketing</title>
-  <link rel="icon" href="/Images/IconForPage.png" type="image/png">
+  <link rel="icon" href="Images/IconForPage.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
@@ -59,9 +59,10 @@
       </section>
  
       <section class="cart" aria-label="Cart">
-        <h2>Cart</h2>
+        <h2>Cart <span id="cart-count">(0)</span></h2>
         <ul id="cart-list" class="cart-list"></ul>
         <p class="cart-total">Total: <strong id="cart-total">0 AZN</strong></p>
+        <button type="button" id="clear-cart" class="clear-cart" disabled>Clear cart</button>
       </section>
     </aside>
   </main>
