@@ -157,6 +157,8 @@ function inspectSeat(seatId) {
 }
 
 seatMap.addEventListener("click", (event) => {
+  if (didDrag) return;
+
   const button = event.target.closest(".seat");
   if (!button) return;
   inspectSeat(button.dataset.seatId);
@@ -271,6 +273,7 @@ const ZOOM_STEP = 0.2;
 const MIN_ZOOM = 0.3;
 const MAX_ZOOM = 2.5;
 const MOVE_STEP = 60;
+const WHEEL_ZOOM_STEP = 0.1;
 
 const view = { scale: 1, x: 0, y: 0 };
 
@@ -292,11 +295,9 @@ function applyView() {
   zoomOutButton.disabled = view.scale <= MIN_ZOOM;
 }
 
-function zoom(delta) {
+function zoom(delta, centerX = viewport.clientWidth / 2, centerY = viewport.clientHeight / 2) {
   const newScale = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, view.scale + delta));
 
-  const centerX = viewport.clientWidth / 2;
-  const centerY = viewport.clientHeight / 2;
   view.x = centerX - ((centerX - view.x) * newScale) / view.scale;
   view.y = centerY - ((centerY - view.y) * newScale) / view.scale;
   view.scale = newScale;
@@ -327,6 +328,65 @@ document.getElementById("move-down").addEventListener("click", () => move(0, MOV
 document.getElementById("move-left").addEventListener("click", () => move(-MOVE_STEP, 0));
 document.getElementById("move-right").addEventListener("click", () => move(MOVE_STEP, 0));
 document.getElementById("reset-view").addEventListener("click", resetView);
+
+viewport.addEventListener("wheel", (event) => {
+  event.preventDefault();
+
+  const rect = viewport.getBoundingClientRect();
+  const mouseX = event.clientX - rect.left;
+  const mouseY = event.clientY - rect.top;
+
+  if (event.deltaY < 0) {
+    zoom(WHEEL_ZOOM_STEP, mouseX, mouseY);
+  } else {
+    zoom(-WHEEL_ZOOM_STEP, mouseX, mouseY);
+  }
+}, { passive: false });
+
+let isDragging = false;
+let didDrag = false;
+let dragStartX = 0;
+let dragStartY = 0;
+let viewStartX = 0;
+let viewStartY = 0;
+
+viewport.addEventListener("mousedown", (event) => {
+  if (event.button !== 0) return;
+
+  isDragging = true;
+  didDrag = false;
+  dragStartX = event.clientX;
+  dragStartY = event.clientY;
+  viewStartX = view.x;
+  viewStartY = view.y;
+});
+
+window.addEventListener("mousemove", (event) => {
+  if (!isDragging) return;
+
+  const dx = event.clientX - dragStartX;
+  const dy = event.clientY - dragStartY;
+
+  // small movements still count as a normal click
+  if (!didDrag && Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
+
+  didDrag = true;
+  viewport.classList.add("dragging");
+  view.x = viewStartX + dx;
+  view.y = viewStartY + dy;
+  applyView();
+});
+
+window.addEventListener("mouseup", () => {
+  if (!isDragging) return;
+
+  isDragging = false;
+  viewport.classList.remove("dragging");
+  // click fires right after mouseup, so reset the flag after it
+  setTimeout(() => {
+    didDrag = false;
+  }, 0);
+});
 
 let lastViewportWidth = viewport.clientWidth;
 

@@ -122,12 +122,23 @@ button {
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--map-bg);
+  cursor: grab;
+  user-select: none;
+}
+
+.map-viewport.dragging {
+  cursor: grabbing;
+}
+
+.map-viewport.dragging .map-content {
+  transition: none;
 }
 
 .map-content {
   transform-origin: 0 0;
   padding: 20px;
   width: max-content;
+  transition: transform 0.2s ease;
 }
 
 .stage {
@@ -388,7 +399,4 @@ button.primary:disabled {
 .seat-details-list dd {
   margin: 0;
   font-weight: 600;
-}
-.map-content {
-  transition: transform 0.2s ease;
 }
