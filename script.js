@@ -65,6 +65,23 @@ function renderVenue() {
 }
 
 renderVenue();
+
+function renderPriceLegend() {
+  const priceLegend = document.getElementById("price-legend");
+
+  Object.keys(PRICE_CATEGORIES).forEach((key) => {
+    const category = PRICE_CATEGORIES[key];
+    const item = document.createElement("li");
+
+    const swatch = document.createElement("span");
+    swatch.className = `swatch ${key}`;
+
+    item.append(swatch, `${category.label} — ${category.price} ${VENUE.currency}`);
+    priceLegend.appendChild(item);
+  });
+}
+
+renderPriceLegend();
 const seatInfo = document.getElementById("seat-info");
 const addToCartButton = document.getElementById("add-to-cart");
 const cartList = document.getElementById("cart-list");
