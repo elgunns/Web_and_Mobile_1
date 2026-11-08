@@ -294,6 +294,17 @@ document.getElementById("move-left").addEventListener("click", () => move(-MOVE_
 document.getElementById("move-right").addEventListener("click", () => move(MOVE_STEP, 0));
 document.getElementById("reset-view").addEventListener("click", resetView);
 
+let lastViewportWidth = viewport.clientWidth;
+
+window.addEventListener("resize", () => {
+  if (viewport.clientWidth !== lastViewportWidth) {
+    lastViewportWidth = viewport.clientWidth;
+    resetView();
+  } else {
+    applyView();
+  }
+});
+
 resetView();
 loadCart();
 renderCart();

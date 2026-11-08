@@ -64,10 +64,17 @@ button {
   padding: 12px;
 }
 
+.venue-panel {
+  min-width: 0;
+}
+
 .side-panel {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  position: sticky;
+  top: 16px;
+  align-self: start;
 }
 
 .map-controls {
@@ -252,13 +259,66 @@ button.primary:disabled {
 }
 
 /* Responsive */
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: 1fr 280px;
+  }
+}
+
 @media (max-width: 900px) {
   .layout {
     grid-template-columns: 1fr;
   }
 
+  .side-panel {
+    position: static;
+    flex-direction: row;
+  }
+
+  .side-panel section {
+    flex: 1;
+  }
+
   .map-viewport {
     height: 400px;
+  }
+}
+
+@media (max-width: 600px) {
+  .site-header {
+    padding: 12px 14px;
+  }
+
+  .site-header h1 {
+    font-size: 1.2rem;
+  }
+
+  .layout {
+    padding: 8px;
+    gap: 10px;
+  }
+
+  .side-panel {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .map-controls button {
+    flex: 1;
+    height: 42px;
+  }
+
+  .map-controls #reset-view {
+    flex-basis: 100%;
+  }
+
+  .map-viewport {
+    height: 340px;
+  }
+
+  .legend {
+    gap: 8px 12px;
+    font-size: 0.8rem;
   }
 }
 .section {
